@@ -1,79 +1,93 @@
-import React, { Fragment, useContext, useEffect, useState } from 'react';
-import { container } from './NavBar';
-import axios from 'axios';
-import { AiOutlineClose, AiFillPlayCircle } from 'react-icons/ai';
-import NoImg from './NoImage.jpg';
-import '../styles/videos.css';
+import React, { useContext, useEffect, useState } from "react";
+import axios from "axios";
+import { AiFillPlayCircle } from "react-icons/ai";
+import { container } from "./NavBar";
+import "../styles/videos.css";
+import NoImg from "./NoImage.jpg";
+import TrailerPlayer from "../Trailers/TrailerPlayer";
 
 function Trends() {
-  const { toggle, inputValue } = useContext(container); // ✅ use NavBar search input
-  const [trendArray, setTrendArray] = useState([]);
-  const [trendTitle, setTrendTitle] = useState('');
-  const [trailer, setTrailer] = useState(true);
-  const Images = 'https://image.tmdb.org/t/p/w500';
-  const apiKey = '77f876d7cdee43f24835c3b9cdf053d8';
+  const { toggle } = useContext(container);
+  const [items, setItems] = useState([]);
+  const [trailerUrl, setTrailerUrl] = useState("");
+  const [showTrailer, setShowTrailer] = useState(false);
+  const apiKey =
+    process.env.REACT_APP_TMDB_API_KEY || "77f876d7cdee43f24835c3b9cdf053d8";
+  const images = "https://image.tmdb.org/t/p/w500";
 
-  const fetchTrends = async () => {
+  useEffect(() => {
+    const fetchTrending = async () => {
+      try {
+        const { data } = await axios.get(
+          "https://api.themoviedb.org/3/trending/all/day",
+          { params: { api_key: apiKey } }
+        );
+        setItems(data.results || []);
+      } catch (err) {
+        console.error("Trending fetch error:", err);
+        setItems([]);
+      }
+    };
+    const t = setTimeout(fetchTrending, 700);
+    return () => clearTimeout(t);
+  }, []);
+
+  const handlePlay = async (item) => {
     try {
-      // ✅ use search if inputValue exists, else trending
-      const endpoint = inputValue
-        ? `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${inputValue}`
-        : `https://api.themoviedb.org/3/trending/all/week?api_key=${apiKey}`;
-
-      const { data } = await axios.get(endpoint);
-      setTrendArray(data.results || []);
-    } catch (error) {
-      console.error('Error fetching trends:', error);
+      const path = item.media_type === "tv" ? "tv" : "movie";
+      const res = await axios.get(
+        `https://api.themoviedb.org/3/${path}/${item.id}/videos`,
+        { params: { api_key: apiKey } }
+      );
+      const video =
+        res.data.results.find((v) => v.type === "Trailer" && v.site === "YouTube") ||
+        res.data.results.find((v) => v.site === "YouTube");
+      if (video) {
+        setTrailerUrl(`https://www.youtube.com/watch?v=${video.key}`);
+        setShowTrailer(true);
+      } else {
+        alert("No trailer available for this item.");
+      }
+    } catch (err) {
+      console.error("Trending trailer fetch error:", err);
     }
   };
 
-  useEffect(() => {
-    fetchTrends();
-  }, [inputValue]); // ✅ refetch whenever search input changes
-
-  const TrendTitle = (trend) => {
-    setTrendTitle(trend.title || trend.name);
-    setTrailer(false);
-  };
-
   return (
-    <Fragment>
-      <div className={toggle ? 'mainBgColor' : 'secondaryBgColor'}>
+    <>
+      <div className={toggle ? "mainBgColor" : "secondaryBgColor"}>
         <div className="movies-container">
-          {trendArray.map((trend, index) => (
-            <Fragment key={index}>
-              <div id={trailer ? 'container' : 'NoContainer'}>
-                <AiFillPlayCircle
-                  color="#fff"
-                  fontSize={40}
-                  id={trailer ? 'playIcon' : 'hide'}
-                  onClick={() => TrendTitle(trend)}
-                />
-                <img
-                  src={trend.poster_path ? `${Images}${trend.poster_path}` : NoImg}
-                  alt=""
-                  onClick={() => TrendTitle(trend)}
-                />
-                <h3
-                  id={trend.title && trend.title.length > 28 ? 'smaller-Text' : ''}
-                  className={toggle ? 'mainColor' : 'secondaryColor'}
-                >
-                  {trend.title || trend.name}
-                </h3>
-              </div>
-            </Fragment>
+          {items.map((item) => (
+            <div key={item.id} id={showTrailer ? "NoContainer" : "container"}>
+              <AiFillPlayCircle
+                color="white"
+                fontSize={40}
+                id={showTrailer ? "hide" : "playIcon"}
+                onClick={() => handlePlay(item)}
+              />
+              <img
+                src={item.poster_path ? `${images}${item.poster_path}` : NoImg}
+                alt={item.title || item.name}
+                onClick={() => handlePlay(item)}
+              />
+              <h3
+                id={(item.title || item.name)?.length > 28 ? "smaller-Text" : ""}
+                className={toggle ? "mainColor" : "secondaryColor"}
+              >
+                {item.title || item.name}
+              </h3>
+            </div>
           ))}
-          <AiOutlineClose
-            id={trailer ? 'Nothing' : 'Exit1'}
-            className={toggle ? 'DarkTheme' : 'LightThemeClose'}
-            fontSize={56}
-            color="white"
-            cursor="pointer"
-            onClick={() => setTrailer(true)}
-          />
+
+          {showTrailer && (
+            <TrailerPlayer
+              trailerUrl={trailerUrl}
+              onClose={() => setShowTrailer(false)}
+            />
+          )}
         </div>
       </div>
-    </Fragment>
+    </>
   );
 }
 

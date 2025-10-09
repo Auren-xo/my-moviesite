@@ -1,78 +1,155 @@
-body{
+/* --------------------- General Body --------------------- */
+body {
     overflow-x: hidden;
-}
-.movies-container{
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+/* --------------------- Movie/TV Container --------------------- */
+.movies-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    position: relative;
 }
-.mainbBgcolor{
+
+/* --------------------- Background Colors --------------------- */
+.mainBgColor {
     background-color: #0c1e25;
     width: 100%;
 }
-.secondaryBgColor{
+.secondaryBgColor {
     background-color: #fff;
     width: 100%;
 }
-.movies-container img{
+
+/* --------------------- Movie/TV Cards --------------------- */
+.movies-container img {
     width: 350px;
     height: 550px;
     margin: 25px 0px 4px 15px;
     border-radius: 18px;
+    cursor: pointer;
+    transition: transform 0.7s;
 }
-.mainColor{
+.movies-container img:hover {
+    transform: scale(1.05);
+}
+
+/* --------------------- Titles --------------------- */
+.mainColor {
     color: #fff;
     display: flex;
     justify-content: center;
     font-size: 1rem;
 }
-#Nothing{
-    display: none;
-}
-.scondaryColor{
+.secondaryColor {
     color: #ff206e;
     width: 90%;
     display: flex;
     justify-content: center;
     font-size: 1rem;
 }
-.movies-container h3, .movies-container img{
-    cursor: pointer;
-    transition: .7s;
-}
-.movies-container img:hover{
-    transform: scale(1.05);
-}
-#container{
-    position: relative;
-}
-#hide{
-    display: none;
-}
-#smaller-Text{
+#smaller-Text {
     width: 100%;
     font-size: 14px;
     display: flex;
     justify-content: center;
 }
-#playIcon{
+
+/* --------------------- Trailer Overlay --------------------- */
+#container {
+    position: relative;
+}
+#NoContainer {
+    opacity: 0.35;
+}
+
+/* --------------------- Play Icon --------------------- */
+#playIcon {
     position: absolute;
     bottom: 70px;
     left: 20px;
-    visibility: visible;
     z-index: 100;
     cursor: pointer;
 }
-#Exit{
+#hide {
+    display: none;
+}
+
+/* --------------------- Exit Button --------------------- */
+#Exit1 {
     position: absolute;
     margin-left: 475px;
     margin-top: 67px;
     z-index: 999;
 }
-.DarkTheme{
+#Nothing {
+    display: none;
+}
+
+/* --------------------- Theme Colors --------------------- */
+.DarkTheme {
     color: #fff;
 }
-#NoContainer{
-    opacity: 0.35;
+.LightThemeClose {
+    color: #ff206e;
+}
+
+/* --------------------- Trailer Player --------------------- */
+.player {
+    position: absolute;
+    margin-top: 120px;
+    z-index: 999;
+}
+.Container {
+    display: none;
+    position: absolute;
+    z-index: 100;
+}
+
+/* --------------------- Movie/TV Hover and Click --------------------- */
+.movies-container h3, 
+.movies-container img {
+    cursor: pointer;
+    transition: 0.7s;
+}
+
+/* --------------------- Responsive Tweaks --------------------- */
+@media (max-width: 768px) {
+    .movies-container img {
+        width: 250px;
+        height: 400px;
+        margin: 15px;
+    }
+    #Exit1 {
+        margin-left: 300px;
+        margin-top: 50px;
+    }
+    #playIcon {
+        bottom: 50px;
+        left: 10px;
+    }
+    #smaller-Text {
+        font-size: 12px;
+    }
+}
+.trailer-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.trailer-wrapper.hide {
+  display: none;
+}
+
+.trailer-wrapper.show {
+  display: flex;
 }
