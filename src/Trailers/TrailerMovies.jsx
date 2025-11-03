@@ -1,32 +1,65 @@
-import React, { useState, useEffect, Fragment } from "react";
-import ReactPlayer from "react-player";
-import movieTrailer from "movie-trailer";
+import React, { useState, useEffect, Fragment } from 'react';
+import ReactPlayer from 'react-player';
+import movieTrailer from 'movie-trailer';
 
 function TrailerMovies({ moviesTitle }) {
-    const [videoURL, setVideoURL] = useState("https://youtu.be/sa9l-dTv9Gk");
+  const [videoURL, setVideoURL] = useState('');
+  const [notFound, setNotFound] = useState(false);
 
-    function handleSearch() {
-        movieTrailer(moviesTitle || "inception")
-            .then((res) => {
-                if (res) {
-                    setVideoURL(res);
-                }
-            })
-            .catch((err) => console.log("Trailer not found:", err));
+  useEffect(() => {
+    let cancelled = false;
+
+    async function findTrailer() {
+      setNotFound(false);
+      setVideoURL('');
+      if (!moviesTitle) return;
+
+      try {
+        const url = await movieTrailer(moviesTitle, { id: false });
+        // movieTrailer returns null if not found
+        if (!cancelled) {
+          if (url) {
+            setVideoURL(url);
+            setNotFound(false);
+          } else {
+            setVideoURL('');
+            setNotFound(true);
+          }
+        }
+      } catch (err) {
+        console.error('movieTrailer error:', err);
+        if (!cancelled) {
+          setVideoURL('');
+          setNotFound(true);
+        }
+      }
     }
 
-    useEffect(() => {
-        handleSearch();
-    }, [moviesTitle]);
+    findTrailer();
 
-    return (
-        <Fragment>
-            <div className="container"></div>
-            <div className="player">
-                <ReactPlayer url={videoURL} controls={true} />
-            </div>
-        </Fragment>
-    );
+    return () => {
+      cancelled = true;
+    };
+  }, [moviesTitle]);
+
+  return (
+    <>
+      <div className="container"></div>
+      <div className="player">
+        {videoURL ? (
+          <ReactPlayer url={videoURL} controls width="100%" height="480px" />
+        ) : notFound ? (
+          <div style={{ color: '#fff', padding: 20 }}>
+            <p>Trailer not available.</p>
+          </div>
+        ) : (
+          <div style={{ color: '#fff', padding: 20 }}>
+            <p>Searching for trailer...</p>
+          </div>
+        )}
+      </div>
+    </>
+  );
 }
 
 export default TrailerMovies;
