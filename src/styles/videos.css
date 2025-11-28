@@ -13,7 +13,7 @@ body {
 }
 
 .mainBgColor {
-    background-color: #0c1e25;
+    background-color: #2f2b38;
     width: 100%;
 }
 .secondaryBgColor {
@@ -25,7 +25,7 @@ body {
     width: 350px;
     height: 550px;
     margin: 25px 0px 4px 15px;
-    border-radius: 18px;
+    border-radius: 80px;
     cursor: pointer;
     transition: transform 0.7s;
 }

@@ -22,7 +22,7 @@ function NavBar() {
       <>
         <nav id={toggle ? "" : "navBarColor"}>
           <div className="nav-left">
-            <h1 id="heading">DAHRLIX</h1>
+            <h1 id="heading">Aurennis</h1>
 
             <div className="hamburger" onClick={handleMenuToggle}>
               {menuOpen ? <FaTimes size={22} /> : <FaBars size={22} />}

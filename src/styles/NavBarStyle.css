@@ -42,13 +42,15 @@ nav {
   font-weight: 700;
   color: #f05dbf;
   letter-spacing: 1px;
+
   white-space: nowrap;
 }
 
 .nav-options {
   display: flex;
   align-items: center;
-  gap: 1.8rem;
+  gap: 2rem;
+  justify-content: center;
 }
 
 .nav-options a {
@@ -89,7 +91,7 @@ nav {
   border-radius: 20px;
   border: none;
   outline: none;
-  width: 220px;
+  width: 400px;
   background: #1b1b1b;
   color: #fff;
 }
